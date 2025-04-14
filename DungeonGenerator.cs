@@ -170,7 +170,7 @@ public class DungeonGenerator : MonoBehaviour
                         doors.Add(door);
                         graph.AddNode(door);
                         graph.AddEdge(door, GetCentre(rooms[i]));
-
+                        graph.AddEdge(door, GetCentre(rooms[j]));
                         AlgorithmsUtils.DebugRectInt(door, Color.green, 100f);
 
                     }
@@ -182,6 +182,7 @@ public class DungeonGenerator : MonoBehaviour
                         doors.Add(door);
                         graph.AddNode(door);
                         graph.AddEdge(door, GetCentre(rooms[i]));
+                        graph.AddEdge(door, GetCentre(rooms[j]));
 
                         AlgorithmsUtils.DebugRectInt(door, Color.green, 100f);
 
@@ -192,7 +193,7 @@ public class DungeonGenerator : MonoBehaviour
 
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.01f);
 
         }
         StartCoroutine(DrawEdges());
@@ -212,8 +213,35 @@ public class DungeonGenerator : MonoBehaviour
                     Debug.DrawLine(pos1, pos2, Color.red, 100f);
                 }
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.01f);
         }
+        BFS(graph.GetNodes()[0]);
+    }
+
+    public void BFS(RectInt v)
+    {
+        HashSet<RectInt> discovered = new HashSet<RectInt>();
+        Queue<RectInt> Q = new Queue<RectInt>();
+
+        Q.Enqueue(v);
+        discovered.Add(v);
+
+        while (Q.Count > 0)
+        {
+            v = Q.Dequeue();
+            Debug.Log(v);
+            foreach (RectInt w in graph.GetNeighbors(v))
+            {
+                if (!discovered.Contains(w))
+                {
+                    Q.Enqueue(w);
+                    discovered.Add(w);
+                }
+            }
+        }
+        Debug.Log(" Discovered: " + discovered.Count + ", Node count: " + graph.GetNodeCount());
+        bool isFullyConnected = (discovered.Count == graph.GetNodeCount());
+        Debug.Log("is fully connevted: " + isFullyConnected);
     }
 
 }
